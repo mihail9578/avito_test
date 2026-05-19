@@ -13,10 +13,11 @@ int main(const int argc, const char **argv) {
     try{
         auto fm = FileManager(input_path);
         auto file_data = fm.GetData();
-        std::cout << file_data << std::endl;
+        std::cout << file_data << std::endl << std::endl;
 
+        auto fs = FrequencySorter(file_data, 3);
+        fs.GetSorted();
     } catch (const std::exception& e){
         std::cerr << e.what() << std::endl;
     }
-
 }
