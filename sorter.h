@@ -1,13 +1,14 @@
 #include <cstddef>
 #include <mutex>
-#include <unordered_map>
-#include <string_view>
 #include <string>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
 class FrequencySorter {
 public:
-    FrequencySorter(std::string_view data, int nthreads = 1) : data_(data), nthreads_(nthreads) {}
+    FrequencySorter(std::string_view data, int nthreads = 1)
+        : data_(data), nthreads_(nthreads) {}
 
     std::vector<std::pair<std::string_view, int>> GetSortedVector();
 
@@ -16,8 +17,8 @@ public:
     FrequencySorter &operator=(const FrequencySorter &fs) = delete;
     FrequencySorter(FrequencySorter &&fs) = delete;
     FrequencySorter &operator=(FrequencySorter &&fs) = delete;
-    
-private:    
+
+private:
     void Sort();
     void CollectWords(size_t from, size_t to);
 
