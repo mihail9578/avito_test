@@ -2,6 +2,8 @@
 #include "file.h"
 #include "sorter.h"
 
+
+
 int main(const int argc, const char **argv) {
     if (argc != 3) {
         std::cerr << "Usage: ./freq [input_file] [output_file]" << std::endl;
@@ -13,10 +15,11 @@ int main(const int argc, const char **argv) {
     try{
         auto fm = FileManager(input_path);
         auto file_data = fm.GetData();
-        std::cout << file_data << std::endl << std::endl;
 
         auto fs = FrequencySorter(file_data, 3);
-        fs.GetSorted();
+
+        WriteToFile(output_path, fs.GetSortedVector());
+
     } catch (const std::exception& e){
         std::cerr << e.what() << std::endl;
     }

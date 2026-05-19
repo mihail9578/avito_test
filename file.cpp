@@ -6,6 +6,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <fstream>
+
+void WriteToFile(const char* path, const std::vector<std::pair<std::string_view, int>>& data) {
+    std::ofstream out{std::string(path)};
+    if (!out) {
+        throw std::runtime_error("Cannot open file for writing");
+    }
+
+    for (const auto& [str, num] : data) {
+        out << str << ' ' << num << '\n';
+    }
+}
 
 FileManager::FileManager(const char *path) {
     int fd = open(path, O_RDONLY);

@@ -1,4 +1,7 @@
 #include <string_view>
+#include <vector>
+
+void WriteToFile(const char* path, const std::vector<std::pair<std::string_view, int>>&data);
 
 class FileManager {
 public:

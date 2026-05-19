@@ -8,14 +8,12 @@
 
 #include <iostream>
 
-void FrequencySorter::GetSorted() {
+std::vector<std::pair<std::string_view, int>> FrequencySorter::GetSortedVector() {
     if(!is_sorted_) {
         Sort();
         is_sorted_ = true;
     }
-    for(const auto& it : sorted_) {
-        std::cout << it.first << " " << it.second << std::endl;
-    }
+    return sorted_;
 }
 
 bool isDelimiter(char c) {
@@ -68,10 +66,9 @@ void FrequencySorter::Sort() {
     while(to < data_.size()) {
         while(to < data_.size() && !(isDelimiter(data_[to]) && !isDelimiter(data_[to + 1]))) to++;
         threads.emplace_back(&FrequencySorter::CollectWords, this, from, to);
-        std::cout << from << " " << to << std::endl;
+
         from = ++to;
         to = to + area_size;
-        std::cout << from << " " << to << std::endl;
     }
 
     if(from < data_.size()) {

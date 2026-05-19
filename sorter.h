@@ -9,7 +9,7 @@ class FrequencySorter {
 public:
     FrequencySorter(std::string_view data, int nthreads = 1) : data_(data), nthreads_(nthreads) {}
 
-    void GetSorted();
+    std::vector<std::pair<std::string_view, int>> GetSortedVector();
 
     FrequencySorter() = delete;
     FrequencySorter(const FrequencySorter &fs) = delete;
