@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <iostream>
 
 std::vector<std::pair<std::string_view, int>>
 FrequencySorter::GetSortedVector() {
@@ -29,7 +28,7 @@ bool isDelimiter(char c) {
     return true;
 }
 
-std::string HandleWord(std::string_view data, size_t &iter) {
+std::string HandleWord(const std::string_view& data, size_t &iter) {
     int begin = iter;
     while (!isDelimiter(data[iter])) {
         iter++;
@@ -40,7 +39,7 @@ std::string HandleWord(std::string_view data, size_t &iter) {
         c = (c >= 'A' && c <= 'Z') ? c - ('A' - 'a') : c;
     }
 
-    while (isDelimiter(data[iter])) {
+    while (iter < data.size() && isDelimiter(data[iter])) {
         iter++;
     }
     return str;
