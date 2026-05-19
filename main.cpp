@@ -11,10 +11,10 @@ int main(const int argc, const char **argv) {
     const char *input_path = argv[1];
     const char *output_path = argv[2];
     try {
-        auto fm = FileReader(input_path);
-        auto file_data = fm.GetData();
+        auto fr = FileReader(input_path);
+        auto file_data = fr.GetData();
 
-        auto fs = FrequencySorter(file_data, 3);
+        auto fs = FrequencySorter(file_data, 1);
 
         WriteToFile(output_path, fs.GetSortedVector());
 

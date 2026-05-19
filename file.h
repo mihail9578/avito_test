@@ -15,10 +15,10 @@ public:
     ~FileReader();
 
     FileReader() = delete;
-    FileReader(const FileReader &fm) = delete;
-    FileReader &operator=(const FileReader &fm) = delete;
-    FileReader(FileReader &&fm) = delete;
-    FileReader &operator=(FileReader &&fm) = delete;
+    FileReader(const FileReader &fr) = delete;
+    FileReader &operator=(const FileReader &fr) = delete;
+    FileReader(FileReader &&fr) = delete;
+    FileReader &operator=(FileReader &&fr) = delete;
 
 private:
     size_t size_;
