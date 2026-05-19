@@ -44,6 +44,7 @@ FileReader::FileReader(const char *path) {
         }
         data_ = std::string_view(static_cast<const char *>(mapped_), size_);
     } else {
+        close(fd);
         mapped_ = nullptr;
         data_ = std::string_view();
     }
