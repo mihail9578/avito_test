@@ -16,7 +16,7 @@ void WriteToFile(const char *path,
     }
 
     for (const auto &[str, num] : data) {
-        out << str << ' ' << num << '\n';
+        out << num << ' ' << str << '\n';
     }
 }
 

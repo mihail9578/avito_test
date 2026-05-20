@@ -63,6 +63,9 @@ void FrequencySorter::Sort() {
     int area_size = data_.size() / nthreads_;
     size_t from = 0;
     size_t to = area_size;
+
+    while(from < data_.size() && isDelimiter(data_[from])) from++;
+
     while (to < data_.size()) {
         while (to < data_.size() &&
                !(isDelimiter(data_[to]) && !isDelimiter(data_[to + 1])))
