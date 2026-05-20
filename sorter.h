@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -8,7 +9,11 @@
 class FrequencySorter {
 public:
     FrequencySorter(std::string_view data, int nthreads = 1)
-        : data_(data), nthreads_(nthreads) {}
+        : data_(data), nthreads_(nthreads) {
+        if (nthreads_ < 1) {
+            throw std::runtime_error("Threads number should be > 0");
+        }
+    }
 
     std::vector<std::pair<std::string_view, int>> GetSortedVector();
 

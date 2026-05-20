@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 std::vector<std::pair<std::string_view, int>>
 FrequencySorter::GetSortedVector() {
     if (!is_sorted_) {
@@ -28,7 +27,7 @@ bool isDelimiter(char c) {
     return true;
 }
 
-std::string HandleWord(const std::string_view& data, size_t &iter) {
+std::string HandleWord(const std::string_view &data, size_t &iter) {
     int begin = iter;
     while (!isDelimiter(data[iter])) {
         iter++;
@@ -48,6 +47,10 @@ std::string HandleWord(const std::string_view& data, size_t &iter) {
 void FrequencySorter::CollectWords(size_t from, size_t to) {
     std::unordered_map<std::string, int> map;
     size_t i = from;
+
+    while (isDelimiter(data_[i]))
+        i++;
+
     while (i < to) {
         map[HandleWord(data_, i)]++;
     }
@@ -64,21 +67,32 @@ void FrequencySorter::Sort() {
     size_t from = 0;
     size_t to = area_size;
 
-    while(from < data_.size() && isDelimiter(data_[from])) from++;
-
-    while (to < data_.size()) {
-        while (to < data_.size() &&
-               !(isDelimiter(data_[to]) && !isDelimiter(data_[to + 1])))
-            to++;
-        threads.emplace_back(&FrequencySorter::CollectWords, this, from, to);
-
-        from = ++to;
-        to = to + area_size;
+    if (to <= 0) {
+        return;
     }
 
-    if (from < data_.size()) {
+    while (to <= data_.size()) {
+        int word_offset = 0;
+        if (!isDelimiter(data_[to - 1])) {
+            while (to + word_offset < data_.size() &&
+                   !isDelimiter(data_[to + word_offset]))
+                word_offset++;
+        }
+        if (from >= to + word_offset) {
+            continue;
+            ;
+        }
+
         threads.emplace_back(&FrequencySorter::CollectWords, this, from,
-                             data_.size());
+                             to + word_offset);
+
+        from = to + word_offset;
+        if (data_.size() - (to + area_size) < area_size ||
+            to / area_size == nthreads_ - 1) {
+            to = data_.size();
+        } else {
+            to += area_size;
+        }
     }
 
     for (auto &th : threads) {
