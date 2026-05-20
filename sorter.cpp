@@ -80,7 +80,6 @@ void FrequencySorter::Sort() {
         }
         if (from >= to + word_offset) {
             continue;
-            ;
         }
 
         threads.emplace_back(&FrequencySorter::CollectWords, this, from,
