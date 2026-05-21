@@ -62,14 +62,13 @@ void FrequencySorter::CollectWords(size_t from, size_t to) {
 }
 
 void FrequencySorter::Sort() {
+    if (data_.size() == 0) {
+        return;
+    }
     std::vector<std::thread> threads;
     int area_size = data_.size() / nthreads_;
     size_t from = 0;
     size_t to = area_size;
-
-    if (to <= 0) {
-        return;
-    }
 
     while (to <= data_.size()) {
         int word_offset = 0;
