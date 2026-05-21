@@ -78,12 +78,10 @@ void FrequencySorter::Sort() {
                    !isDelimiter(data_[to + word_offset]))
                 word_offset++;
         }
-        if (from >= to + word_offset) {
-            continue;
+        if (from < to + word_offset) {
+            threads.emplace_back(&FrequencySorter::CollectWords, this, from,
+                                 to + word_offset);
         }
-
-        threads.emplace_back(&FrequencySorter::CollectWords, this, from,
-                             to + word_offset);
 
         from = to + word_offset;
         if (data_.size() - (to + area_size) < area_size ||
