@@ -9,8 +9,8 @@
 
 class FrequencySorter {
 public:
-    FrequencySorter(std::string_view data, int nthreads = 1)
-        : data_(data), nthreads_(nthreads) {
+    FrequencySorter(std::string& data, int nthreads = 1)
+        : data_(std::move(data)), nthreads_(nthreads) {
         if (nthreads_ < 1) {
             throw std::runtime_error("Threads number should be > 0");
         }
@@ -27,14 +27,13 @@ public:
 private:
     void Sort();
     void CollectWords(size_t from, size_t to,
-                      std::unordered_map<std::string, int> &map);
+                      std::unordered_map<std::string_view, int> &map);
 
-    void HandleWord(const std::string_view &data, size_t &iter,
-                    std::string &word);
+    std::string_view HandleWord(std::string &data, size_t &iter);
 
-    std::string_view data_;
+    std::string data_;
     bool is_sorted_ = false;
     int nthreads_ = 1;
-    std::unordered_map<std::string, int> map_;
+    std::unordered_map<std::string_view, int> map_;
     std::vector<std::pair<std::string_view, int>> sorted_;
 };

@@ -1,4 +1,4 @@
-#include <string_view>
+#include <string>
 #include <vector>
 
 void WriteToFile(const char *path,
@@ -8,7 +8,7 @@ class FileReader {
 public:
     explicit FileReader(const char *path);
 
-    std::string_view GetData() {
+    std::string GetData() {
         return data_;
     }
 
@@ -23,5 +23,5 @@ public:
 private:
     size_t size_;
     void *mapped_ = nullptr;
-    std::string_view data_;
+    std::string data_;
 };
