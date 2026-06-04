@@ -6,6 +6,45 @@
 #include <unordered_map>
 #include <vector>
 
+constexpr auto MakeIsDelim() {
+    std::array<bool, 256> t{};
+    for (int i = 0; i < 256; ++i) {
+        unsigned char c = static_cast<unsigned char>(i);
+
+        t[i] = !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+    }
+    return t;
+}
+
+constexpr auto MakeToLower() {
+    std::array<char, 256> t{};
+    for (int i = 0; i < 256; ++i) {
+        unsigned char c = static_cast<unsigned char>(i);
+        if (c >= 'A' && c <= 'Z') {
+            t[i] = static_cast<char>(c + ('a' - 'A'));
+        } else {
+            t[i] = c;
+        }
+    }
+    return t;
+}
+
+static constexpr auto IsDelim = MakeIsDelim();
+static constexpr auto ToLower = MakeToLower();
+
+constexpr std::array<bool, 256> InitDelimiterTable() {
+    std::array<bool, 256> table{};
+    for (int i = 0; i < 256; ++i) {
+        unsigned char ch = static_cast<unsigned char>(i);
+        table[i] = !((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
+    }
+    return table;
+}
+
+inline bool isDelimiter(const char c) {
+    return IsDelim[static_cast<unsigned char>(c)];
+}
+
 std::vector<std::pair<std::string_view, int>>
 FrequencySorter::GetSortedVector() {
     if (!is_sorted_) {
@@ -15,49 +54,38 @@ FrequencySorter::GetSortedVector() {
     return sorted_;
 }
 
-bool isDelimiter(char c) {
-    if (c >= 'a' && c <= 'z') {
-        return false;
+void FrequencySorter::HandleWord(const std::string_view &data, size_t &iter,
+                                 std::string &word) {
+    word.clear();
+    const size_t size = data.size();
+    size_t begin = iter;
+
+    while (iter < size && !isDelimiter(data[iter])) {
+        ++iter;
+    }
+    const size_t len = iter - begin;
+
+    word.reserve(len);
+    for (size_t i = begin; i < iter; ++i) {
+        word.push_back(ToLower[static_cast<unsigned char>(data[i])]);
     }
 
-    if (c >= 'A' && c <= 'Z') {
-        return false;
+    while (iter < size && isDelimiter(data[iter])) {
+        ++iter;
     }
-
-    return true;
 }
 
-std::string HandleWord(const std::string_view &data, size_t &iter) {
-    int begin = iter;
-    while (!isDelimiter(data[iter])) {
-        iter++;
-    }
-    std::string str(data, begin, iter - begin);
-
-    for (auto &c : str) {
-        c = (c >= 'A' && c <= 'Z') ? c - ('A' - 'a') : c;
-    }
-
-    while (iter < data.size() && isDelimiter(data[iter])) {
-        iter++;
-    }
-    return str;
-}
-
-void FrequencySorter::CollectWords(size_t from, size_t to) {
-    std::unordered_map<std::string, int> map;
+void FrequencySorter::CollectWords(size_t from, size_t to,
+                                   std::unordered_map<std::string, int> &map) {
     size_t i = from;
 
     while (isDelimiter(data_[i]))
         i++;
 
+    std::string buf;
     while (i < to) {
-        map[HandleWord(data_, i)]++;
-    }
-
-    std::lock_guard lk(mtx_);
-    for (const auto &el : map) {
-        map_[el.first] += el.second;
+        HandleWord(data_, i, buf);
+        map[buf]++;
     }
 }
 
@@ -69,7 +97,8 @@ void FrequencySorter::Sort() {
     int area_size = data_.size() / nthreads_;
     size_t from = 0;
     size_t to = area_size;
-
+    std::vector<std::unordered_map<std::string, int>> local_maps(nthreads_);
+    int i = 0;
     while (to <= data_.size()) {
         int word_offset = 0;
         if (!isDelimiter(data_[to - 1])) {
@@ -79,7 +108,7 @@ void FrequencySorter::Sort() {
         }
         if (from < to + word_offset) {
             threads.emplace_back(&FrequencySorter::CollectWords, this, from,
-                                 to + word_offset);
+                                 to + word_offset, std::ref(local_maps[i++]));
         }
 
         from = to + word_offset;
@@ -93,6 +122,12 @@ void FrequencySorter::Sort() {
 
     for (auto &th : threads) {
         th.join();
+    }
+
+    for (auto &lm : local_maps) {
+        for (auto &[word, cnt] : lm) {
+            map_[std::move(word)] += cnt;
+        }
     }
 
     std::vector<std::pair<std::string_view, int>> sorted(map_.begin(),

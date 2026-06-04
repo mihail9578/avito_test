@@ -42,6 +42,7 @@ FileReader::FileReader(const char *path) {
             throw std::runtime_error(std::string("FileReader: mmap failed: ") +
                                      strerror(errno));
         }
+        madvise(mapped_, size_, MADV_SEQUENTIAL);
         data_ = std::string_view(static_cast<const char *>(mapped_), size_);
     } else {
         close(fd);

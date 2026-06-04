@@ -1,3 +1,4 @@
+#include <array>
 #include <cstddef>
 #include <mutex>
 #include <stdexcept>
@@ -25,12 +26,15 @@ public:
 
 private:
     void Sort();
-    void CollectWords(size_t from, size_t to);
+    void CollectWords(size_t from, size_t to,
+                      std::unordered_map<std::string, int> &map);
+
+    void HandleWord(const std::string_view &data, size_t &iter,
+                    std::string &word);
 
     std::string_view data_;
     bool is_sorted_ = false;
     int nthreads_ = 1;
-    std::mutex mtx_;
     std::unordered_map<std::string, int> map_;
     std::vector<std::pair<std::string_view, int>> sorted_;
 };
