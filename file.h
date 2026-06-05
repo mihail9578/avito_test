@@ -8,7 +8,7 @@ class FileReader {
 public:
     explicit FileReader(const char *path);
 
-    std::string GetData() {
+    std::string& GetData() {
         return data_;
     }
 

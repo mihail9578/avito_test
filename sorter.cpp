@@ -45,11 +45,10 @@ FrequencySorter::GetSortedVector() {
     return sorted_;
 }
 
-std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter) {
-    const size_t size = data.size();
+std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter, size_t data_size) {
     size_t begin = iter;
 
-    while (iter < size && !isDelimiter(data[iter])) {
+    while (iter < data_size && !isDelimiter(data[iter])) {
         data_[iter] = ToLower[static_cast<unsigned char>(data_[iter])];
         ++iter;
     }
@@ -57,7 +56,7 @@ std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter) {
 
     auto str = std::string_view(&data_[begin], len);
 
-    while (iter < size && isDelimiter(data[iter])) {
+    while (iter < data_size && isDelimiter(data[iter])) {
         ++iter;
     }
     return str;
@@ -71,7 +70,7 @@ void FrequencySorter::CollectWords(size_t from, size_t to,
         i++;
 
     while (i < to) {
-        map[HandleWord(data_, i)]++;
+        map[HandleWord(data_, i, data_.size())]++;
     }
 }
 
@@ -84,6 +83,11 @@ void FrequencySorter::Sort() {
     size_t from = 0;
     size_t to = area_size;
     std::vector<std::unordered_map<std::string_view, int>> local_maps(nthreads_);
+
+    for(auto& map : local_maps) {
+        map.reserve(area_size / 5); // оценка количества уникальных слов
+    }
+
     int i = 0;
     while (to <= data_.size()) {
         int word_offset = 0;

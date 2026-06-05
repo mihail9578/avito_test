@@ -12,7 +12,7 @@ int main(const int argc, const char **argv) {
     const char *output_path = argv[2];
     try {
         auto fr = FileReader(input_path);
-        auto file_data = fr.GetData();
+        auto &file_data = fr.GetData();
 
         auto fs = FrequencySorter(file_data, 1);
 

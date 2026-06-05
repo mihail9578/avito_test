@@ -29,7 +29,7 @@ private:
     void CollectWords(size_t from, size_t to,
                       std::unordered_map<std::string_view, int> &map);
 
-    std::string_view HandleWord(std::string &data, size_t &iter);
+    std::string_view HandleWord(std::string &data, size_t &iter, size_t data_size);
 
     std::string data_;
     bool is_sorted_ = false;
