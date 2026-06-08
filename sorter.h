@@ -17,6 +17,7 @@ public:
     }
 
     std::vector<std::pair<std::string_view, int>> &GetSortedVector();
+    ~FrequencySorter() = default;
 
     FrequencySorter() = delete;
     FrequencySorter(const FrequencySorter &fs) = delete;

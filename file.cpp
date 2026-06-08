@@ -7,16 +7,29 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+static constexpr size_t BUF_SIZE = 1 << 20;
+static constexpr size_t STR_SIZE = 32;
+
 void WriteToFile(const char *path,
                  const std::vector<std::pair<std::string_view, int>> &data) {
-    std::ofstream out{std::string(path)};
+    std::ofstream out{path};
     if (!out) {
         throw std::runtime_error("Cannot open file for writing");
     }
 
+    std::vector<char> buf(BUF_SIZE);
+    out.rdbuf()->pubsetbuf(buf.data(), buf.size());
+
+    std::string output;
+
+    output.reserve(data.size() * STR_SIZE);
     for (const auto &[str, num] : data) {
-        out << num << ' ' << str << '\n';
+        output.append(std::to_string(num));
+        output += ' ';
+        output.append(str);
+        output += '\n';
     }
+    out.write(output.data(), output.size());
 }
 
 FileReader::FileReader(const char *path) {

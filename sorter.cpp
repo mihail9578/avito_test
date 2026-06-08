@@ -6,20 +6,22 @@
 #include <unordered_map>
 #include <vector>
 
-constexpr std::array<bool, 256> MakeIsDelim() {
-    std::array<bool, 256> t{};
-    for (int i = 0; i < 256; ++i) {
-        unsigned char c = static_cast<unsigned char>(i);
+static constexpr size_t CHAR_RANGE = 256;
+
+constexpr std::array<bool, CHAR_RANGE> MakeIsDelim() {
+    std::array<bool, CHAR_RANGE> t{};
+    for (size_t i = 0; i < CHAR_RANGE; ++i) {
+        auto c = static_cast<unsigned char>(i);
 
         t[i] = !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
     }
     return t;
 }
 
-constexpr std::array<char, 256> MakeToLower() {
-    std::array<char, 256> t{};
-    for (int i = 0; i < 256; ++i) {
-        unsigned char c = static_cast<unsigned char>(i);
+constexpr std::array<char, CHAR_RANGE> MakeToLower() {
+    std::array<char, CHAR_RANGE> t{};
+    for (size_t i = 0; i < CHAR_RANGE; ++i) {
+        auto c = static_cast<unsigned char>(i);
         if (c >= 'A' && c <= 'Z') {
             t[i] = static_cast<char>(c + ('a' - 'A'));
         } else {
@@ -50,7 +52,7 @@ std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter,
     size_t begin = iter;
 
     while (iter < data_size && !isDelimiter(data[iter])) {
-        data_[iter] = ToLower[static_cast<unsigned char>(data_[iter])];
+        data_[iter] = ToLower.at(static_cast<unsigned char>(data_[iter]));
         ++iter;
     }
     const size_t len = iter - begin;
@@ -116,7 +118,7 @@ void FrequencySorter::Sort() {
         global_map.reserve(local_maps[0].size());
         for (auto &lm : local_maps) {
             for (auto &[word, cnt] : lm) {
-                global_map[std::move(word)] += cnt;
+                global_map[word] += cnt;
             }
         }
     }
@@ -126,8 +128,9 @@ void FrequencySorter::Sort() {
 
     // std::execution::par can be used
     std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) {
-        if (a.second != b.second)
+        if (a.second != b.second) {
             return a.second > b.second;
+        }
         return a.first < b.first;
     });
     sorted_ = std::move(sorted);
