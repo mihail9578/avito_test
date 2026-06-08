@@ -42,12 +42,9 @@ FileReader::FileReader(const char *path) {
                                      strerror(errno));
         }
         madvise(mapped_, size_, MADV_SEQUENTIAL);
-        data_.reserve(size_);
-        data_ = std::string(static_cast<const char *>(mapped_), size_);
     } else {
         close(fd);
         mapped_ = nullptr;
-        data_ = std::string();
     }
 }
 

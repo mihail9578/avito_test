@@ -8,8 +8,10 @@ class FileReader {
 public:
     explicit FileReader(const char *path);
 
-    std::string &GetData() {
-        return data_;
+    std::string GetData() {
+        return size_ > 0
+                   ? std::string(static_cast<const char *>(mapped_), size_)
+                   : std::string();
     }
 
     ~FileReader();
@@ -23,5 +25,4 @@ public:
 private:
     size_t size_;
     void *mapped_ = nullptr;
-    std::string data_;
 };

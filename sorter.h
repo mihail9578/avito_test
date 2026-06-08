@@ -9,7 +9,7 @@
 
 class FrequencySorter {
 public:
-    FrequencySorter(std::string &data, int nthreads = 1)
+    FrequencySorter(std::string data, int nthreads = 1)
         : data_(std::move(data)), nthreads_(nthreads) {
         if (nthreads_ < 1) {
             throw std::runtime_error("Threads number should be > 0");
@@ -35,6 +35,5 @@ private:
     std::string data_;
     bool is_sorted_ = false;
     int nthreads_ = 1;
-    std::unordered_map<std::string_view, int> map_;
     std::vector<std::pair<std::string_view, int>> sorted_;
 };

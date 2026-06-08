@@ -83,6 +83,7 @@ void FrequencySorter::Sort() {
     std::vector<std::thread> threads;
     int area_size = data_.size() / nthreads_;
     size_t from = 0;
+    std::unordered_map<std::string_view, int> global_map;
     std::vector<std::unordered_map<std::string_view, int>> local_maps(
         nthreads_);
 
@@ -110,18 +111,18 @@ void FrequencySorter::Sort() {
     }
 
     if (nthreads_ == 1) {
-        map_ = std::move(local_maps[0]);
+        global_map = std::move(local_maps[0]);
     } else {
-        map_.reserve(local_maps[0].size());
+        global_map.reserve(local_maps[0].size());
         for (auto &lm : local_maps) {
             for (auto &[word, cnt] : lm) {
-                map_[std::move(word)] += cnt;
+                global_map[std::move(word)] += cnt;
             }
         }
     }
 
-    std::vector<std::pair<std::string_view, int>> sorted(map_.begin(),
-                                                         map_.end());
+    std::vector<std::pair<std::string_view, int>> sorted(global_map.begin(),
+                                                         global_map.end());
 
     // std::execution::par can be used
     std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) {
