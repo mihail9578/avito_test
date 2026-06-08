@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-constexpr auto MakeIsDelim() {
+constexpr std::array<bool, 256> MakeIsDelim() {
     std::array<bool, 256> t{};
     for (int i = 0; i < 256; ++i) {
         unsigned char c = static_cast<unsigned char>(i);
@@ -16,7 +16,7 @@ constexpr auto MakeIsDelim() {
     return t;
 }
 
-constexpr auto MakeToLower() {
+constexpr std::array<char, 256> MakeToLower() {
     std::array<char, 256> t{};
     for (int i = 0; i < 256; ++i) {
         unsigned char c = static_cast<unsigned char>(i);
