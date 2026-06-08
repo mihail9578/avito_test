@@ -67,8 +67,9 @@ void FrequencySorter::CollectWords(
     size_t from, size_t to, std::unordered_map<std::string_view, int> &map) {
     size_t i = from;
 
-    while (isDelimiter(data_[i]))
-        i++;
+    while (isDelimiter(data_[i])) {
+        ++i;
+    }
 
     while (i < to) {
         map[HandleWord(data_, i, data_.size())]++;
@@ -94,8 +95,9 @@ void FrequencySorter::Sort() {
                         ? data_.size()
                         : std::min(data_.size(), from + area_size);
 
-        while (to < data_.size() && !isDelimiter(data_[to]))
-            to++;
+        while (to < data_.size() && !isDelimiter(data_[to])) {
+            ++to;
+        }
 
         threads.emplace_back(&FrequencySorter::CollectWords, this, from, to,
                              std::ref(local_maps[t]));
