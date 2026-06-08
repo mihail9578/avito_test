@@ -45,7 +45,8 @@ FrequencySorter::GetSortedVector() {
     return sorted_;
 }
 
-std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter, size_t data_size) {
+std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter,
+                                             size_t data_size) {
     size_t begin = iter;
 
     while (iter < data_size && !isDelimiter(data[iter])) {
@@ -62,8 +63,8 @@ std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter, si
     return str;
 }
 
-void FrequencySorter::CollectWords(size_t from, size_t to,
-                                   std::unordered_map<std::string_view, int> &map) {
+void FrequencySorter::CollectWords(
+    size_t from, size_t to, std::unordered_map<std::string_view, int> &map) {
     size_t i = from;
 
     while (isDelimiter(data_[i]))
@@ -75,49 +76,45 @@ void FrequencySorter::CollectWords(size_t from, size_t to,
 }
 
 void FrequencySorter::Sort() {
-    if (data_.size() == 0) {
+    if (data_.empty()) {
         return;
     }
     std::vector<std::thread> threads;
     int area_size = data_.size() / nthreads_;
     size_t from = 0;
-    size_t to = area_size;
-    std::vector<std::unordered_map<std::string_view, int>> local_maps(nthreads_);
+    std::vector<std::unordered_map<std::string_view, int>> local_maps(
+        nthreads_);
 
-    for(auto& map : local_maps) {
+    for (auto &map : local_maps) {
         map.reserve(area_size / 5); // оценка количества уникальных слов
     }
 
-    int i = 0;
-    while (to <= data_.size()) {
-        int word_offset = 0;
-        if (!isDelimiter(data_[to - 1])) {
-            while (to + word_offset < data_.size() &&
-                   !isDelimiter(data_[to + word_offset]))
-                word_offset++;
-        }
+    for (int t = 0; t < nthreads_; ++t) {
+        size_t to = (t == nthreads_ - 1)
+                        ? data_.size()
+                        : std::min(data_.size(), from + area_size);
 
-        if (from < to + word_offset) {
-            threads.emplace_back(&FrequencySorter::CollectWords, this, from,
-                                 to + word_offset, std::ref(local_maps[i++]));
-        }
+        while (to < data_.size() && !isDelimiter(data_[to]))
+            to++;
 
-        from = to + word_offset;
-        if (data_.size() - (to + area_size) < area_size ||
-            to / area_size == nthreads_ - 1) {
-            to = data_.size();
-        } else {
-            to += area_size;
-        }
+        threads.emplace_back(&FrequencySorter::CollectWords, this, from, to,
+                             std::ref(local_maps[t]));
+
+        from = to;
     }
 
     for (auto &th : threads) {
         th.join();
     }
 
-    for (auto &lm : local_maps) {
-        for (auto &[word, cnt] : lm) {
-            map_[std::move(word)] += cnt;
+    if (nthreads_ == 1) {
+        map_ = std::move(local_maps[0]);
+    } else {
+        map_.reserve(local_maps[0].size());
+        for (auto &lm : local_maps) {
+            for (auto &[word, cnt] : lm) {
+                map_[std::move(word)] += cnt;
+            }
         }
     }
 
