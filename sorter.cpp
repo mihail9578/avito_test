@@ -36,7 +36,7 @@ inline bool isDelimiter(const char c) {
     return IsDelim[static_cast<unsigned char>(c)];
 }
 
-std::vector<std::pair<std::string_view, int>>
+std::vector<std::pair<std::string_view, int>> &
 FrequencySorter::GetSortedVector() {
     if (!is_sorted_) {
         Sort();
