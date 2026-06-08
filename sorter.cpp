@@ -115,7 +115,8 @@ void FrequencySorter::Sort() {
     if (nthreads_ == 1) {
         global_map = std::move(local_maps[0]);
     } else {
-        global_map.reserve(local_maps[0].size());
+        global_map.swap(*local_maps.begin());
+        local_maps.erase(local_maps.begin());
         for (auto &lm : local_maps) {
             for (auto &[word, cnt] : lm) {
                 global_map[word] += cnt;
