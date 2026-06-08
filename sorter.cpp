@@ -34,7 +34,7 @@ constexpr std::array<char, CHAR_RANGE> MakeToLower() {
 static constexpr auto IsDelim = MakeIsDelim();
 static constexpr auto ToLower = MakeToLower();
 
-inline bool isDelimiter(const char c) {
+constexpr bool isDelimiter(const char c) {
     return IsDelim.at(static_cast<unsigned char>(c));
 }
 
