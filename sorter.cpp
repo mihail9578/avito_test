@@ -13,7 +13,7 @@ constexpr std::array<bool, CHAR_RANGE> MakeIsDelim() {
     for (size_t i = 0; i < CHAR_RANGE; ++i) {
         auto c = static_cast<unsigned char>(i);
 
-        t[i] = !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+        t.at(i) = !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
     }
     return t;
 }
@@ -23,9 +23,9 @@ constexpr std::array<char, CHAR_RANGE> MakeToLower() {
     for (size_t i = 0; i < CHAR_RANGE; ++i) {
         auto c = static_cast<unsigned char>(i);
         if (c >= 'A' && c <= 'Z') {
-            t[i] = static_cast<char>(c + ('a' - 'A'));
+            t.at(i) = static_cast<char>(c + ('a' - 'A'));
         } else {
-            t[i] = c;
+            t.at(i) = c;
         }
     }
     return t;
@@ -74,7 +74,7 @@ void FrequencySorter::CollectWords(
     }
 
     while (i < to) {
-        map[HandleWord(data_, i, data_.size())]++;
+        ++map[HandleWord(data_, i, data_.size())];
     }
 }
 
