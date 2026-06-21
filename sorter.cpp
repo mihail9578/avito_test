@@ -47,11 +47,10 @@ FrequencySorter::GetSortedVector() {
     return sorted_;
 }
 
-std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter,
-                                             size_t data_size) {
+std::string_view FrequencySorter::HandleWord(size_t &iter, size_t data_size) {
     size_t begin = iter;
 
-    while (iter < data_size && !isDelimiter(data[iter])) {
+    while (iter < data_size && !isDelimiter(data_[iter])) {
         data_[iter] = ToLower.at(static_cast<unsigned char>(data_[iter]));
         ++iter;
     }
@@ -59,7 +58,7 @@ std::string_view FrequencySorter::HandleWord(std::string &data, size_t &iter,
 
     auto str = std::string_view(&data_[begin], len);
 
-    while (iter < data_size && isDelimiter(data[iter])) {
+    while (iter < data_size && isDelimiter(data_[iter])) {
         ++iter;
     }
     return str;
@@ -74,7 +73,7 @@ void FrequencySorter::CollectWords(
     }
 
     while (i < to) {
-        ++map[HandleWord(data_, i, data_.size())];
+        ++map[HandleWord(i, data_.size())];
     }
 }
 
